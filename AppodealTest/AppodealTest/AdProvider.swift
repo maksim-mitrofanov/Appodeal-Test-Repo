@@ -10,6 +10,7 @@ import Appodeal
 
 class AdProvider: NSObject, ObservableObject {
     @Published private(set) var isBannerReady = false
+    @Published private(set) var isInterstitialReady = false
     @Published private(set) var automaticBannerCount = 0
     @Published private(set) var manualBannerCount = 0
     @Published private(set) var canShowMoreBanners = true
@@ -22,39 +23,41 @@ class AdProvider: NSObject, ObservableObject {
     private override init() {
         super.init()
         Appodeal.initialize(withApiKey: AdConstants.appKey, types: AdConstants.adTypes)
-        Appodeal.setBannerAnimationEnabled(true)
         Appodeal.setBannerDelegate(self)
+        Appodeal.setInterstitialDelegate(self)
+        Appodeal.setTestingEnabled(true)
+        
+        isInterstitialReady = Appodeal.isReadyForShow(with: .interstitial)
     }
     
     static let shared = AdProvider()
-    
-    enum BannerDisplayMode: String {
-        case manual, automatic
-        
-        var description: String {
-            self.rawValue.capitalized
+}
+
+// MARK: - Interstitial
+extension AdProvider: AppodealInterstitialDelegate {
+    func showInterstitial() {
+        guard
+            Appodeal.canShow(.interstitial, forPlacement: AdConstants.interstitialPlacement),
+            let viewController = UIApplication.shared.rootViewController
+        else {
+            return
         }
+        
+        Appodeal.showAd(
+            .interstitial,
+            forPlacement: AdConstants.interstitialPlacement,
+            rootViewController: viewController
+        )
+    }
+    
+    func interstitialDidFailToLoadAd() {
+        print("Ready to show interstitial: failed to load")
     }
 }
 
+// MARK: - Banner
 extension AdProvider: AppodealBannerDelegate {
-    func bannerDidShow() {
-        switch bannerDisplayMode {
-        case .manual:
-            manualBannerCount += 1
-            hideTopBanner()
-        case .automatic:
-            automaticBannerCount += 1
-            if automaticBannerCount > 1 {
-                hideTopBanner()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-                    self?.presentBanner()
-                }
-            }
-        }
-    }
-    
-    func presentBanner() {
+    func showBanner() {
         guard didNotReachMaxRepeatCount else { canShowMoreBanners = false; return }
         guard Appodeal.canShow(.banner, forPlacement: AdConstants.bannerPlacement) else { return }
         guard let viewController = UIApplication.shared.rootViewController else { return }
@@ -66,7 +69,23 @@ extension AdProvider: AppodealBannerDelegate {
         )
     }
     
-    func hideTopBanner() {
+    func bannerDidShow() {
+        switch bannerDisplayMode {
+        case .manual:
+            manualBannerCount += 1
+            hideTopBanner()
+        case .automatic:
+            automaticBannerCount += 1
+            if automaticBannerCount > 1 {
+                hideTopBanner()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                    self?.showBanner()
+                }
+            }
+        }
+    }
+    
+    private func hideTopBanner() {
         Appodeal.hideBanner()
     }
     
@@ -74,6 +93,14 @@ extension AdProvider: AppodealBannerDelegate {
         switch bannerDisplayMode {
         case .automatic: return automaticBannerCount < AdConstants.automaticBannerMaxCount
         case .manual: return manualBannerCount < AdConstants.manualBannerMaxCount
+        }
+    }
+    
+    enum BannerDisplayMode: String {
+        case manual, automatic
+        
+        var description: String {
+            self.rawValue.capitalized
         }
     }
 }

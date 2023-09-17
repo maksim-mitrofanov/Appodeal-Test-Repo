@@ -15,15 +15,27 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Spacer()
-
+            
             bannerDisplayModeSelector
-            Button("Present banner") {
-                adProvider.presentBanner()
-            }
-            .buttonStyle(.bordered)
-            .disabled(!adProvider.canShowMoreBanners)
+            showBannerButton
+            showInterstitialButton
         }
         .padding()
+    }
+    
+    private var showInterstitialButton: some View {
+        Button("Show interstitial") {
+            adProvider.showInterstitial()
+        }
+        .buttonStyle(.borderedProminent)
+    }
+    
+    private var showBannerButton: some View {
+        Button("Present banner") {
+            adProvider.showBanner()
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(!adProvider.canShowMoreBanners)
     }
     
     private var bannerDisplayModeSelector: some View {
