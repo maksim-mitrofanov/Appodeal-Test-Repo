@@ -14,4 +14,6 @@ class AdConstants {
     static let appKey = "04af8871592a92a40505fd51e8d48b14dd40a07ae51fb893"
     static let adTypes: AppodealAdType = [.banner]
     static let bannerPlacement: String = "bannerRestriction"
+    static let automaticBannerMaxCount = 5
+    static let manualBannerMaxCount = 5
 }

@@ -14,10 +14,43 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
+            Spacer()
+
+            bannerDisplayModeSelector
             Button("Present banner") {
                 adProvider.presentBanner()
             }
+            .buttonStyle(.bordered)
+            .disabled(!adProvider.canShowMoreBanners)
         }
+        .padding()
+    }
+    
+    private var bannerDisplayModeSelector: some View {
+        HStack {
+            Menu {
+                Button("Show ads manually") {
+                    adProvider.bannerDisplayMode = .manual
+                }
+                Button("Show ads automatically") {
+                    adProvider.bannerDisplayMode = .automatic
+                }
+            } label: {
+                VStack(alignment: .leading){
+                    HStack {
+                        Text("Select banner display mode: ")
+                            .bold()
+                            .foregroundColor(.black)
+                        Text(adProvider.bannerDisplayMode.description)
+                            .foregroundColor(.blue)
+                        Spacer()
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            Spacer()
+        }
+        .animation(nil, value: adProvider.bannerDisplayMode)
     }
 }
 
