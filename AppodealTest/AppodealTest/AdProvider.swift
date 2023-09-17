@@ -26,28 +26,30 @@ class AdProvider: NSObject, ObservableObject {
         Appodeal.setBannerDelegate(self)
         Appodeal.setInterstitialDelegate(self)
         Appodeal.setTestingEnabled(true)
-        
-        isInterstitialReady = Appodeal.isReadyForShow(with: .interstitial)
     }
     
     static let shared = AdProvider()
 }
 
+// MARK: - Rewarded Video
+extension AdProvider: AppodealRewardedVideoDelegate {
+    func showRewardedVideo() {
+        guard Appodeal.canShow(.rewardedVideo, forPlacement: "default")
+        else { return }
+        guard let viewController = UIApplication.shared.rootViewController
+        else { return }
+        Appodeal.showAd(.rewardedVideo, forPlacement: "default", rootViewController: viewController)
+    }
+}
+
 // MARK: - Interstitial
 extension AdProvider: AppodealInterstitialDelegate {
     func showInterstitial() {
-        guard
-            Appodeal.canShow(.interstitial, forPlacement: AdConstants.interstitialPlacement),
-            let viewController = UIApplication.shared.rootViewController
-        else {
-            return
-        }
-        
-        Appodeal.showAd(
-            .interstitial,
-            forPlacement: AdConstants.interstitialPlacement,
-            rootViewController: viewController
-        )
+        guard Appodeal.canShow(.interstitial, forPlacement: AdConstants.interstitialPlacement)
+        else { return }
+        guard let viewController = UIApplication.shared.rootViewController
+        else { return }
+        Appodeal.showAd(.interstitial, forPlacement: AdConstants.interstitialPlacement, rootViewController: viewController)
     }
     
     func interstitialDidFailToLoadAd() {

@@ -19,9 +19,18 @@ struct ContentView: View {
             bannerDisplayModeSelector
             showBannerButton
             showInterstitialButton
+            showRewardedButton
         }
         .padding()
     }
+    
+    private var showRewardedButton: some View {
+        Button("Show rewarded video") {
+            adProvider.showRewardedVideo()
+        }
+        .buttonStyle(.borderedProminent)
+    }
+    
     
     private var showInterstitialButton: some View {
         Button("Show interstitial") {
