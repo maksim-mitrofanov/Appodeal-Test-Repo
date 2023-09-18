@@ -6,61 +6,109 @@
 //
 
 import SwiftUI
+import Combine
 import Appodeal
 
 class AdProvider: NSObject, ObservableObject {
-    @Published private(set) var isBannerReady = false
-    @Published private(set) var isInterstitialReady = false
-    @Published private(set) var automaticBannerCount = 0
-    @Published private(set) var manualBannerCount = 0
-    @Published private(set) var canShowMoreBanners = true
-    @Published var bannerDisplayMode: BannerDisplayMode = .manual {
-        didSet {
-            canShowMoreBanners = didNotReachMaxRepeatCount
-        }
-    }
+    private var isBannerReady = false
+    private var displayedBannerCount = 0
+    @Published private(set) var canShowMoreBanners = false
     
+    private var isInterstitialReady = false
+    private var interstitialTimePassed = true
+    private var interstitialTimer: Timer? = nil
+    private var displayedInterstitialCount = 0
+    @Published private(set) var canShowMoreInterstitials = false
+    
+    private var isRewardedVideoReady = false
+    private var displayedRewardedVideoCount = 0
+    @Published private(set) var canShowMoreRewardedVideos = false
+    
+    private var isNativeAdReady = false
+    private var displayedNativeAdCount = 0
+    @Published private(set) var canShowMoreNativeAds = false
+        
     private override init() {
         super.init()
         Appodeal.initialize(withApiKey: AdConstants.appKey, types: AdConstants.adTypes)
         Appodeal.setBannerDelegate(self)
         Appodeal.setInterstitialDelegate(self)
-        Appodeal.setTestingEnabled(true)
+        Appodeal.setRewardedVideoDelegate(self)
+        startTimer()
     }
     
     static let shared = AdProvider()
 }
 
+
 // MARK: - Rewarded Video
 extension AdProvider: AppodealRewardedVideoDelegate {
     func showRewardedVideo() {
-        guard Appodeal.canShow(.rewardedVideo, forPlacement: "default")
-        else { return }
-        guard let viewController = UIApplication.shared.rootViewController
-        else { return }
+        defer { canShowMoreRewardedVideos = false }
+        guard Appodeal.canShow(.rewardedVideo, forPlacement: "default") else { return }
+        guard let viewController = UIApplication.shared.rootViewController else { return }
+        
+        hideBanner()
         Appodeal.showAd(.rewardedVideo, forPlacement: "default", rootViewController: viewController)
+    }
+    
+    func rewardedVideoDidLoadAdIsPrecache(_ precache: Bool) {
+        if displayedRewardedVideoCount < AdConstants.rewardedVideoMaxCount {
+            canShowMoreRewardedVideos = true
+        }
+    }
+    
+    func rewardedVideoDidPresent() {
+        displayedRewardedVideoCount += 1
+    }
+    
+    func rewardedVideoDidFailToLoadAd() {
+        canShowMoreRewardedVideos = false
     }
 }
 
 // MARK: - Interstitial
 extension AdProvider: AppodealInterstitialDelegate {
     func showInterstitial() {
-        guard Appodeal.canShow(.interstitial, forPlacement: AdConstants.interstitialPlacement)
-        else { return }
-        guard let viewController = UIApplication.shared.rootViewController
-        else { return }
+        defer { canShowMoreInterstitials = false; interstitialTimePassed = false }
+        guard Appodeal.canShow(.interstitial, forPlacement: AdConstants.interstitialPlacement) else { return }
+        guard let viewController = UIApplication.shared.rootViewController else { return }
+        
         Appodeal.showAd(.interstitial, forPlacement: AdConstants.interstitialPlacement, rootViewController: viewController)
     }
     
+    func interstitialDidLoadAdIsPrecache(_ precache: Bool) {
+        if interstitialTimePassed {
+            canShowMoreInterstitials = true
+        }
+    }
+    
     func interstitialDidFailToLoadAd() {
-        print("Ready to show interstitial: failed to load")
+        canShowMoreInterstitials = false
+    }
+    
+    func interstitialWillPresent() {
+        hideBanner()
+    }
+    
+    private func startTimer() {
+        interstitialTimer?.invalidate()
+        let timeInterval = TimeInterval(AdConstants.interstitialPauseInSeconds)
+        
+        interstitialTimer = Timer.scheduledTimer(withTimeInterval: timeInterval, repeats: true) { [weak self] _ in
+            self?.interstitialTimePassed = true
+        }
+        
+        if let timer = interstitialTimer {
+            RunLoop.current.add(timer, forMode: .common)
+        }
     }
 }
 
 // MARK: - Banner
 extension AdProvider: AppodealBannerDelegate {
     func showBanner() {
-        guard didNotReachMaxRepeatCount else { canShowMoreBanners = false; return }
+        defer { canShowMoreBanners = false }
         guard Appodeal.canShow(.banner, forPlacement: AdConstants.bannerPlacement) else { return }
         guard let viewController = UIApplication.shared.rootViewController else { return }
         
@@ -71,38 +119,18 @@ extension AdProvider: AppodealBannerDelegate {
         )
     }
     
+    func bannerDidLoadAdIsPrecache(_ precache: Bool) {
+        if displayedBannerCount < AdConstants.bannerMaxCount {
+            canShowMoreBanners = true
+        }
+    }
+    
     func bannerDidShow() {
-        switch bannerDisplayMode {
-        case .manual:
-            manualBannerCount += 1
-            hideTopBanner()
-        case .automatic:
-            automaticBannerCount += 1
-            if automaticBannerCount > 1 {
-                hideTopBanner()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-                    self?.showBanner()
-                }
-            }
-        }
+        displayedBannerCount += 1
+        hideBanner()
     }
     
-    private func hideTopBanner() {
+    private func hideBanner() {
         Appodeal.hideBanner()
-    }
-    
-    private var didNotReachMaxRepeatCount: Bool {
-        switch bannerDisplayMode {
-        case .automatic: return automaticBannerCount < AdConstants.automaticBannerMaxCount
-        case .manual: return manualBannerCount < AdConstants.manualBannerMaxCount
-        }
-    }
-    
-    enum BannerDisplayMode: String {
-        case manual, automatic
-        
-        var description: String {
-            self.rawValue.capitalized
-        }
     }
 }

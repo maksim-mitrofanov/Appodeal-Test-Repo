@@ -12,9 +12,13 @@ class AdConstants {
     private init() { }
     
     static let appKey = "04af8871592a92a40505fd51e8d48b14dd40a07ae51fb893"
-    static let adTypes: AppodealAdType = [.banner, .interstitial, .rewardedVideo]
+    static let adTypes: AppodealAdType = [.banner, .interstitial, .rewardedVideo, .nativeAd]
+    
+    static let bannerMaxCount = 5
     static let bannerPlacement: String = "bannerRestriction"
+    
+    static let interstitialPauseInSeconds = 60
     static let interstitialPlacement: String = "interstitialRestriction"
-    static let automaticBannerMaxCount = 5
-    static let manualBannerMaxCount = 5
+    
+    static let rewardedVideoMaxCount = 3
 }

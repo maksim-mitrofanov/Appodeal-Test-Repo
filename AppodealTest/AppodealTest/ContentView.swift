@@ -14,9 +14,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Spacer()
-            
-            bannerDisplayModeSelector
+            Spacer()            
             showBannerButton
             showInterstitialButton
             showRewardedButton
@@ -24,11 +22,20 @@ struct ContentView: View {
         .padding()
     }
     
+    private var showNativeAdButton: some View {
+        Button("Show native ads") {
+            
+        }
+        .buttonStyle(CustomButtonStyle())
+        .disabled(!adProvider.canShowMoreNativeAds)
+    }
+    
     private var showRewardedButton: some View {
         Button("Show rewarded video") {
             adProvider.showRewardedVideo()
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(CustomButtonStyle())
+        .disabled(!adProvider.canShowMoreRewardedVideos)
     }
     
     
@@ -36,42 +43,16 @@ struct ContentView: View {
         Button("Show interstitial") {
             adProvider.showInterstitial()
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(CustomButtonStyle())
+        .disabled(!adProvider.canShowMoreInterstitials)
     }
     
     private var showBannerButton: some View {
         Button("Present banner") {
             adProvider.showBanner()
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(CustomButtonStyle())
         .disabled(!adProvider.canShowMoreBanners)
-    }
-    
-    private var bannerDisplayModeSelector: some View {
-        HStack {
-            Menu {
-                Button("Show ads manually") {
-                    adProvider.bannerDisplayMode = .manual
-                }
-                Button("Show ads automatically") {
-                    adProvider.bannerDisplayMode = .automatic
-                }
-            } label: {
-                VStack(alignment: .leading){
-                    HStack {
-                        Text("Select banner display mode: ")
-                            .bold()
-                            .foregroundColor(.black)
-                        Text(adProvider.bannerDisplayMode.description)
-                            .foregroundColor(.blue)
-                        Spacer()
-                    }
-                }
-                .frame(maxWidth: .infinity)
-            }
-            Spacer()
-        }
-        .animation(nil, value: adProvider.bannerDisplayMode)
     }
 }
 
