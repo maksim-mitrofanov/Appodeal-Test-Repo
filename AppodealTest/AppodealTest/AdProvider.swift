@@ -23,10 +23,6 @@ class AdProvider: NSObject, ObservableObject {
     private var isRewardedVideoReady = false
     private var displayedRewardedVideoCount = 0
     @Published private(set) var canShowMoreRewardedVideos = false
-    
-    private var isNativeAdReady = false
-    private var displayedNativeAdCount = 0
-    @Published private(set) var canShowMoreNativeAds = false
         
     private override init() {
         super.init()
@@ -34,7 +30,7 @@ class AdProvider: NSObject, ObservableObject {
         Appodeal.setBannerDelegate(self)
         Appodeal.setInterstitialDelegate(self)
         Appodeal.setRewardedVideoDelegate(self)
-        startTimer()
+        startTimerForInterstitial()
     }
     
     static let shared = AdProvider()
@@ -48,7 +44,6 @@ extension AdProvider: AppodealRewardedVideoDelegate {
         guard Appodeal.canShow(.rewardedVideo, forPlacement: "default") else { return }
         guard let viewController = UIApplication.shared.rootViewController else { return }
         
-        hideBanner()
         Appodeal.showAd(.rewardedVideo, forPlacement: "default", rootViewController: viewController)
     }
     
@@ -60,6 +55,11 @@ extension AdProvider: AppodealRewardedVideoDelegate {
     
     func rewardedVideoDidPresent() {
         displayedRewardedVideoCount += 1
+        hideBanner()
+    }
+    
+    func rewardedVideoDidFinish(_ rewardAmount: Float, name rewardName: String?) {
+        showBanner()
     }
     
     func rewardedVideoDidFailToLoadAd() {
@@ -91,7 +91,11 @@ extension AdProvider: AppodealInterstitialDelegate {
         hideBanner()
     }
     
-    private func startTimer() {
+    func interstitialDidDismiss() {
+        showBanner()
+    }
+    
+    private func startTimerForInterstitial() {
         interstitialTimer?.invalidate()
         let timeInterval = TimeInterval(AdConstants.interstitialPauseInSeconds)
         
@@ -125,9 +129,9 @@ extension AdProvider: AppodealBannerDelegate {
         }
     }
     
+    #warning("Bug: The first banner is only shown for 1 second, other banners are shown for 15 seconds.")
     func bannerDidShow() {
         displayedBannerCount += 1
-        hideBanner()
     }
     
     private func hideBanner() {

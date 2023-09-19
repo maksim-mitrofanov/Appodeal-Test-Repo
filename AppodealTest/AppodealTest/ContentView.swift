@@ -10,6 +10,7 @@ import Appodeal
 
 struct ContentView: View {
     @StateObject private var adProvider = AdProvider.shared
+    @State private var isShowingSheet = false
     @StateObject private var locationManager = LocationManager()
     
     var body: some View {
@@ -18,16 +19,19 @@ struct ContentView: View {
             showBannerButton
             showInterstitialButton
             showRewardedButton
+            showNativeAdButton
         }
         .padding()
+        .sheet(isPresented: $isShowingSheet) {
+            NativeAdsList()
+        }
     }
     
     private var showNativeAdButton: some View {
         Button("Show native ads") {
-            
+            isShowingSheet = true
         }
         .buttonStyle(CustomButtonStyle())
-        .disabled(!adProvider.canShowMoreNativeAds)
     }
     
     private var showRewardedButton: some View {
