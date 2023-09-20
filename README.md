@@ -24,6 +24,29 @@ The main goald of this assignment to familiarize yourself with teh Appodeal's SD
 
 
 
+# Writing assignment
+Hello, Client!
+ 
+Thank's for reaching out to our technical support team, my name is Maksim and I will do my best to help you fix the issue you’ve described. 
+
+Regarding the email that you’ve received from Google Play, it’s important to remember that Google Corporation has several rules, policies, and best practices that all apps published in Google Play should follow. It seems to me that the reason why you’ve received the email is because Google is trying to maintain the overall positive user experience and based on their rules, showing interstitial ads is only allowed after a user performs an action with a clear intent. 
+ 
+ In other words, the user has to first tap on some kind of button, or banner, or finish performing some action before the ad can be presented. 
+
+One way of fixing this issue is to add some kind of button and make sure that the interstitial ads are only presented when this button gets pressed. By doing so, we ensure that the user is never interrupted, or as the email said: «focused on a task at hand».
+ 
+ Another possible solution could be to present the interstitial ads after the user has finished performing some kind of action «e.g. playing a game, filling out a form, reading content». For example, when the user fills out a form and presses the primary action button (continue, next or something else), we could present the interstitial ad before moving to the next step.
+The presentation of the interstitial ads can be easily changed via the AdverisingProvider class and its methods like .presentInterstitial, .interstitialDidLoadAdIsPrecache, etc. 
+ 
+ I hope that this clarifies the issue, as well as gives you possible strategies for fixing it. In case you have any other questions left, please don’t hesitate to ask me.
+ 
+ Also, in case it is possible to share some of the files from your project, you can share them with me so I can try to fix this issue for you.
+ 
+ Kind regards,
+ Maksim.
+
+
+
 
 
 
