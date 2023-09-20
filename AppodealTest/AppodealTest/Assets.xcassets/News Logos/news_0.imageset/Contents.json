@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "bbc-earth-logo-1x1.jpg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

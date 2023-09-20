@@ -23,12 +23,13 @@ struct ContentView: View {
         }
         .padding()
         .sheet(isPresented: $isShowingSheet) {
-            NativeAdsList()
+            NativeAdsList(adProvider: adProvider)
         }
     }
     
     private var showNativeAdButton: some View {
         Button("Show native ads") {
+            adProvider.addContent()
             isShowingSheet = true
         }
         .buttonStyle(CustomButtonStyle())

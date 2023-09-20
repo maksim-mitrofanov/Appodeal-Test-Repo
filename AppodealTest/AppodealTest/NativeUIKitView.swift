@@ -9,7 +9,7 @@ import Foundation
 import Appodeal
 import SwiftUI
 
-final class NativeView: UIView {
+final class NativeUIKitView: UIView {
     @IBOutlet weak var title: UILabel!
     @IBOutlet weak var callToAction: UILabel!
     
@@ -25,13 +25,13 @@ final class NativeView: UIView {
         self.icon.layer.cornerRadius = 8.0
         self.icon.layer.masksToBounds = true
         
-        self.callToAction.layer.cornerRadius = 8.0
+        self.callToAction.layer.cornerRadius = 20.0
         self.callToAction.layer.masksToBounds = true
     }
 }
 
 
-extension NativeView : APDNativeAdView {
+extension NativeUIKitView : APDNativeAdView {
     func titleLabel() -> UILabel {
         return title
     }
@@ -66,31 +66,31 @@ extension APDNativeAd {
     struct Native: UIViewRepresentable {
         let ad: APDNativeAd
         
-        func makeUIView(context: UIViewRepresentableContext<Native>) -> NativeView {
+        func makeUIView(context: UIViewRepresentableContext<Native>) -> NativeUIKitView {
             guard
                 let viewController = UIApplication.shared.rootViewController,
                 let uiView = uiView(for: viewController)
             else {
-                return NativeView()
+                return NativeUIKitView()
             }
             return uiView
         }
         
-        func updateUIView(_ uiView: NativeView, context: UIViewRepresentableContext<Native>) {}
+        func updateUIView(_ uiView: NativeUIKitView, context: UIViewRepresentableContext<Native>) {}
         
-        private func uiView(for viewController: UIViewController) -> NativeView? {
+        private func uiView(for viewController: UIViewController) -> NativeUIKitView? {
             return try? ad.getViewForPlacement(
                 "default",
                 withRootViewController: viewController
-            ) as? NativeView
+            ) as? NativeUIKitView
         }
     }
     
     var view: AnyView {
         AnyView(
             Native(ad: self)
-                .shadow(color: .red, radius: 8)
-                .frame(height: 400)
+                .shadow(color: .gray.opacity(0.2), radius: 10, x: 2, y: 2)
+                .frame(height: 450)
         )
     }
 }

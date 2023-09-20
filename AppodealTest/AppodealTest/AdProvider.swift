@@ -23,6 +23,24 @@ class AdProvider: NSObject, ObservableObject {
     private var isRewardedVideoReady = false
     private var displayedRewardedVideoCount = 0
     @Published private(set) var canShowMoreRewardedVideos = false
+    
+    @Published private(set) var newsFeedContent: [FeedContent] = []
+    private var subscriptions: Set<AnyCancellable> = Set()
+    private lazy var adQueue: APDNativeAdQueue = {
+        let settings = APDNativeAdSettings()
+        settings.adViewClass = NativeUIKitView.self
+        
+        let queue = APDNativeAdQueue(
+            sdk: nil,
+            settings: settings,
+            delegate: self,
+            autocache: false
+        )
+        return queue
+    }()
+    
+    deinit { subscriptions.forEach { $0.cancel() } }
+    
         
     private override init() {
         super.init()
@@ -34,6 +52,28 @@ class AdProvider: NSObject, ObservableObject {
     }
     
     static let shared = AdProvider()
+}
+
+// MARK: - Native Ads
+extension AdProvider: APDNativeAdQueueDelegate {
+    func addContent(_ size: Int = 8) {
+        hideBanner()
+        guard newsFeedContent.isEmpty else { return }
+        let newContent = ArticleDataModel.generate(numberOfTemplates: size).map(FeedContent.init)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.adQueue.loadAd()
+            self?.newsFeedContent.append(contentsOf: newContent)
+        }
+    }
+    
+    func adQueueAdIsAvailable(_ adQueue: APDNativeAdQueue, ofCount count: UInt) {
+        let placedAdCount = newsFeedContent.filter { $0.data is APDNativeAd }.count
+        guard placedAdCount == 0 || newsFeedContent.count / placedAdCount > 4 else { return }
+        let ads = adQueue.getNativeAds(ofCount: Int(count))
+        ads.map(FeedContent.init).forEach {
+            newsFeedContent.insert($0, at: Int.random(in: (0..<newsFeedContent.count)))
+        }
+    }
 }
 
 

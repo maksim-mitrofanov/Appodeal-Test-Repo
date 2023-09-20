@@ -18,6 +18,8 @@
 		4C8651C52AB5A01600CF18E2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8651C42AB5A01600CF18E2 /* ContentView.swift */; };
 		4C8651C72AB5A01700CF18E2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C8651C62AB5A01700CF18E2 /* Assets.xcassets */; };
 		4C8651CA2AB5A01700CF18E2 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C8651C92AB5A01700CF18E2 /* Preview Assets.xcassets */; };
+		4C8FA4B82AB9F74E000FE267 /* ArticleDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C8FA4B72AB9F74E000FE267 /* ArticleDataModel.swift */; };
+		4CB467612AB9F59A00EC2EF3 /* ArticleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB467602AB9F59A00EC2EF3 /* ArticleView.swift */; };
 		4CB9B9592AB8D5D900BDB8DD /* Native.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4CB9B9582AB8D5D900BDB8DD /* Native.xib */; };
 		7562156C1F5D1689976390FD /* Pods_AppodealTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DE512AF5A10B9CD623EB794 /* Pods_AppodealTest.framework */; };
 /* End PBXBuildFile section */
@@ -36,6 +38,8 @@
 		4C8651C42AB5A01600CF18E2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		4C8651C62AB5A01700CF18E2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C8651C92AB5A01700CF18E2 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		4C8FA4B72AB9F74E000FE267 /* ArticleDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleDataModel.swift; sourceTree = "<group>"; };
+		4CB467602AB9F59A00EC2EF3 /* ArticleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleView.swift; sourceTree = "<group>"; };
 		4CB9B9582AB8D5D900BDB8DD /* Native.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Native.xib; sourceTree = "<group>"; };
 		4DE512AF5A10B9CD623EB794 /* Pods_AppodealTest.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AppodealTest.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		730C2CF509D0211E4E30732A /* Pods-AppodealTest.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AppodealTest.release.xcconfig"; path = "Target Support Files/Pods-AppodealTest/Pods-AppodealTest.release.xcconfig"; sourceTree = "<group>"; };
@@ -92,6 +96,8 @@
 				4C82A12C2AB5AFF500756FDE /* LocationManager.swift */,
 				4C8651C42AB5A01600CF18E2 /* ContentView.swift */,
 				4C0F22C82AB89C6200B3D274 /* NativeAdsList.swift */,
+				4CB467602AB9F59A00EC2EF3 /* ArticleView.swift */,
+				4C8FA4B72AB9F74E000FE267 /* ArticleDataModel.swift */,
 				4CB9B9582AB8D5D900BDB8DD /* Native.xib */,
 				4C0F22CA2AB8A31200B3D274 /* NativeUIKitView.swift */,
 				4C0F22C62AB8819500B3D274 /* CustomButtonStyle.swift */,
@@ -250,12 +256,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4C8FA4B82AB9F74E000FE267 /* ArticleDataModel.swift in Sources */,
 				4C82A1332AB5BE5B00756FDE /* AdProvider.swift in Sources */,
 				4C0F22C92AB89C6200B3D274 /* NativeAdsList.swift in Sources */,
 				4C82A13D2AB6DF8A00756FDE /* Extensions.swift in Sources */,
 				4C82A1312AB5B86C00756FDE /* AdConstants.swift in Sources */,
 				4C8651C52AB5A01600CF18E2 /* ContentView.swift in Sources */,
 				4C8651C32AB5A01600CF18E2 /* AppodealTestApp.swift in Sources */,
+				4CB467612AB9F59A00EC2EF3 /* ArticleView.swift in Sources */,
 				4C0F22C72AB8819600B3D274 /* CustomButtonStyle.swift in Sources */,
 				4C82A12D2AB5AFF500756FDE /* LocationManager.swift in Sources */,
 				4C0F22CB2AB8A31200B3D274 /* NativeUIKitView.swift in Sources */,
