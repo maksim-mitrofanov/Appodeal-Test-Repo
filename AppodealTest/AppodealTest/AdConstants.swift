@@ -21,6 +21,4 @@ class AdConstants {
     static let interstitialPlacement: String = "interstitialRestriction"
     
     static let rewardedVideoMaxCount = 3
-    
-    static let nativeAdAspectRatio: CGFloat = 16/9
 }

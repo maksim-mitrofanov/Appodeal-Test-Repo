@@ -10,8 +10,8 @@ import Combine
 import Appodeal
 
 class AdProvider: NSObject, ObservableObject {
-    private var isBannerReady = false
     private var displayedBannerCount = 0
+    private var isShowingBanner = false
     @Published private(set) var canShowMoreBanners = false
     
     private var isInterstitialReady = false
@@ -153,8 +153,11 @@ extension AdProvider: AppodealInterstitialDelegate {
 extension AdProvider: AppodealBannerDelegate {
     func showBanner() {
         defer { canShowMoreBanners = false }
+        guard !isShowingBanner else { return }
         guard Appodeal.canShow(.banner, forPlacement: AdConstants.bannerPlacement) else { return }
         guard let viewController = UIApplication.shared.rootViewController else { return }
+        isShowingBanner = true
+        print("Banner presented.")
         
         Appodeal.showAd(
             .bannerTop,
@@ -169,12 +172,18 @@ extension AdProvider: AppodealBannerDelegate {
         }
     }
     
-    #warning("Bug: The first banner is only shown for 1 second, other banners are shown for 15 seconds.")
     func bannerDidShow() {
         displayedBannerCount += 1
+        
+        if displayedBannerCount == AdConstants.bannerMaxCount {
+            hideBanner()
+        }
+        print("Banner shown: \(displayedBannerCount) times")
     }
     
     private func hideBanner() {
+        print("Banner hidden.")
+        isShowingBanner = false
         Appodeal.hideBanner()
     }
 }
